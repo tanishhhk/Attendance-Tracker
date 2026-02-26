@@ -1,21 +1,10 @@
-// ═══════════════════════════════════════════════════════════════
-//  DJUBO — angular-app.js
-//  Module declaration + shared helper functions
-// ═══════════════════════════════════════════════════════════════
-
 var app = angular.module('djuboAttendanceApp', ['ngRoute']);
 
-// ── SHARED HELPERS ────────────────────────────────────────────
-
-// Format seconds → "Xh Ym"
 function fmtDuration(seconds) {
     var d = moment.duration(seconds, 'seconds');
     return Math.floor(d.asHours()) + 'h ' + d.minutes() + 'm';
 }
 
-// Stamp absent records for a single employee from their join date up to
-// (but not including) today, skipping weekends and existing records.
-// Returns true if anything was written so caller can save.
 function seedAbsent(records, joinDate) {
     var today   = moment().startOf('day');
     var start   = moment(joinDate).startOf('day');
@@ -24,7 +13,7 @@ function seedAbsent(records, joinDate) {
 
     while (cursor.isBefore(today)) {
         var dow = cursor.day();
-        if (dow !== 0 && dow !== 6) {               // skip weekends
+        if (dow !== 0 && dow !== 6) {         
             var exists = _.find(records, function(r) {
                 return moment(r.date).isSame(cursor, 'day');
             });

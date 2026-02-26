@@ -1,8 +1,3 @@
-// ═══════════════════════════════════════════════════════════════
-//  DJUBO — static/js/controllers/mainCtrl.js
-//  Root controller: header, profile modal, break overlay, logout
-// ═══════════════════════════════════════════════════════════════
-
 app.controller('MainController', function($scope, $window, $interval, $location, AttendanceService) {
     var vm = this;
 
@@ -15,7 +10,7 @@ app.controller('MainController', function($scope, $window, $interval, $location,
     vm.showProfile = false;
     vm.profileData = {};
 
-    // ── MOMENT.JS ── Last login relative time in header
+    // MOMENT.JS Last login relative time in header
     vm.lastLoginDisplay = vm.currentUser.lastLogin
         ? 'Last login: ' + moment(vm.currentUser.lastLogin, 'YYYY-MM-DD HH:mm:ss').fromNow()
         : '';

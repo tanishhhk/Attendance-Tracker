@@ -1,7 +1,3 @@
-// ═══════════════════════════════════════════════════════════════
-//  DJUBO — static/js/directives/appDirectives.js
-// ═══════════════════════════════════════════════════════════════
-
 app.directive('autoFocus', function($timeout) {
     return {
         restrict: 'A',

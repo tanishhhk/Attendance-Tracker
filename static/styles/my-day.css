@@ -1,14 +1,7 @@
-/* ═══════════════════════════════════════════
-   DJUBO — my-day.css
-   Employee dashboard specific overrides
-═══════════════════════════════════════════ */
-
-/* Highlighted today status */
 .checkin-card .status-row strong {
     color: #E07A3F;
 }
 
-/* Break button pulsing indicator */
 .btn-secondary.on-break {
     animation: pulse 1.5s infinite;
 }

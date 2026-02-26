@@ -1,8 +1,3 @@
-// ═══════════════════════════════════════════════════════════════
-//  DJUBO — static/js/controllers/profileCardCtrl.js
-//  Auth / Login controller
-// ═══════════════════════════════════════════════════════════════
-
 app.controller('AuthController', function($scope, $window, $location, AttendanceService) {
     var vm = this;
 

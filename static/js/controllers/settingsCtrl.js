@@ -1,8 +1,3 @@
-// ═══════════════════════════════════════════════════════════════
-//  DJUBO — static/js/controllers/settingsCtrl.js
-//  Settings controller (profile update, preferences)
-// ═══════════════════════════════════════════════════════════════
-
 app.controller('SettingsController', function($scope, AttendanceService) {
     var vm = this;
 

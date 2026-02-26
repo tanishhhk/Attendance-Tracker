@@ -1,8 +1,3 @@
-// ═══════════════════════════════════════════════════════════════
-//  DJUBO — static/js/services/attendance.service.js
-//  Handles localStorage read/write for attendance & leaves
-// ═══════════════════════════════════════════════════════════════
-
 app.service('AttendanceService', function() {
 
     this.getAttendance = function(employeeId) {

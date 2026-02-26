@@ -1,11 +1,3 @@
-<!-- ═══════════════════════════════════════════════════════════════
-     DJUBO — static/partial/layout.html
-     Shell layout loaded by every authenticated route.
-     Header + role-based content + shared modals all live here.
-     index.html body is only: <div ng-view></div>
-════════════════════════════════════════════════════════════════ -->
-
-<!-- ── Header (always visible) ── -->
 <header class="header">
     <div class="header-content">
         <div class="logo">
@@ -24,7 +16,7 @@
     </div>
 </header>
 
-<!-- ── Role-based page content ── -->
+<!-- Role-based page content -->
 <div class="main-container">
     <div ng-if="main.currentUser.role === 'employee'"
          ng-include="'static/partial/my-day.html'">

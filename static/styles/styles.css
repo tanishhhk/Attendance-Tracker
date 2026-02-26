@@ -1,11 +1,3 @@
-/* ═══════════════════════════════════════════
-   DJUBO — Shared Stylesheet
-   Colours:  primary #E07A3F  |  amber #f59e0b
-             green  #10b981   |  red   #ef4444
-             purple #8b5cf6
-═══════════════════════════════════════════ */
-
-/* ── Reset ── */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
@@ -15,11 +7,11 @@ body {
     line-height: 1.6;
 }
 
-/* ── Shared card ── */
+/* Shared card */
 .card { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 1.5rem 2rem; margin-bottom: 2rem; }
 .card h2, .card h3 { margin-bottom: 1rem; }
 
-/* ── Header ── */
+/*Header */
 .header { background: #E07A3F; color: white; padding: 1rem 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
 .logo h1 { font-size: 1.5rem; }
@@ -29,7 +21,7 @@ body {
 .user-role { padding: 0.25rem 0.75rem; background: rgba(255,255,255,0.2); border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; }
 .last-login { font-size: 0.7rem; opacity: 0.8; margin-top: 2px; }
 
-/* ── Buttons ── */
+/*buttons*/
 .btn, .btn-nav, .btn-close, .btn-approve, .btn-reject, .btn-small { border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-family: inherit; }
 .btn { padding: 0.75rem 1.5rem; font-size: 1rem; }
 .btn-primary   { background: #E07A3F; color: white; }
@@ -52,7 +44,7 @@ body {
 .btn-reject    { flex: 1; padding: 0.5rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
 .btn-reject:hover    { background: #dc2626; }
 
-/* ── Badges ── */
+/* badges */
 .badge { padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
 .badge.present  { background: #d1fae5; color: #065f46; }
 .badge.absent   { background: #fee2e2; color: #991b1b; }
@@ -62,23 +54,23 @@ body {
 .badge.approved { background: #d1fae5; color: #065f46; }
 .badge.rejected { background: #fee2e2; color: #991b1b; }
 
-/* ── Dots ── */
+/*dots */
 .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
 .dot.present  { background: #E07A3F; }
 .dot.late     { background: #f59e0b; }
 .dot.absent   { background: #ef4444; }
 .dot.on-leave { background: #8b5cf6; }
 
-/* ── Main Container ── */
+/* main container */
 .main-container { max-width: 1200px; margin: 2rem auto; padding: 0 2rem; }
 
-/* ── Stats Grid ── */
+/*stats grid */
 .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
 .stat-card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
 .stat-card h3 { font-size: 2rem; color: #E07A3F; margin-bottom: 0.5rem; }
 .stat-card p  { color: #666; font-size: 0.875rem; }
 
-/* ── Check-in card ── */
+/* check-in card */
 .checkin-card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem; }
 .checkin-card h2 { margin-bottom: 1rem; }
 .current-time { text-align: center; font-size: 1.125rem; color: #E07A3F; padding: 1rem; background: #f5f7fa; border-radius: 4px; margin-bottom: 1.5rem; }
@@ -89,14 +81,14 @@ body {
 .action-group { display: flex; gap: 1rem; justify-content: center; }
 .completed-msg { color: #10b981; font-weight: 600; }
 
-/* ── Section toggle bar ── */
+/* section toggle */
 .section-toggle-bar { display: flex; justify-content: flex-end; gap: 1rem; margin-bottom: 1rem; }
 
-/* ── Charts ── */
+/* charts */
 .charts-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
 .chart-card { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 1rem; overflow: hidden; }
 
-/* ── Calendar ── */
+/* calendar*/
 .calendar-section { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem; }
 .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
 .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; }
@@ -112,7 +104,7 @@ body {
 .calendar-legend { display: flex; gap: 1.5rem; margin-top: 1rem; justify-content: center; flex-wrap: wrap; }
 .calendar-legend span { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; }
 
-/* ── Activity ── */
+/* activity */
 .activity-section { background: white; padding: 1.5rem 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem; }
 .activity-section h3 { margin-bottom: 1rem; font-size: 1rem; }
 .activity-list { list-style: none; }
@@ -121,7 +113,7 @@ body {
 .activity-date { color: #999; min-width: 100px; }
 .activity-text { color: #555; }
 
-/* ── Admin controls / tabs ── */
+/* admin-controls */
 .admin-controls { background: white; padding: 1.25rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap; }
 .admin-controls input { flex: 1; min-width: 180px; }
 .admin-controls input, .admin-controls select { padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9rem; }
@@ -131,24 +123,24 @@ body {
 .tab-btn.tab-active { color: #E07A3F; border-bottom-color: #E07A3F; }
 .leave-badge { background: #ef4444; color: white; border-radius: 999px; padding: 0.1rem 0.5rem; font-size: 0.7rem; font-weight: 700; }
 
-/* ── Handsontable wrapper ── */
+/* handsontable */
 .hot-wrapper { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 1rem 1rem 1.5rem; margin-bottom: 1.5rem; overflow: hidden; }
 .hot-hint { font-size: 0.8rem; color: #666; background: #fffbeb; border-left: 3px solid #f59e0b; padding: 0.5rem 0.75rem; border-radius: 0 4px 4px 0; margin-bottom: 0.75rem; }
 
-/* ── Modal ── */
+/*modal*/
 .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
 .modal-content { background: white; border-radius: 8px; width: 90%; max-height: 85vh; overflow-y: auto; padding: 2rem; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
 .details p { margin: 0.75rem 0; }
 
-/* ── Break overlay ── */
+/* break*/
 .break-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 2000; }
 .break-modal { background: white; padding: 3rem; border-radius: 8px; text-align: center; max-width: 400px; }
 .break-modal h2 { margin-bottom: 1rem; }
 .break-timer { font-size: 3rem; color: #E07A3F; font-weight: 700; margin: 1.5rem 0; }
 .break-modal p { margin-bottom: 1.5rem; color: #666; }
 
-/* ── Forms ── */
+/* forms*/
 .form-group { margin-bottom: 1rem; }
 .form-group label { display: block; margin-bottom: 0.5rem; color: #666; font-size: 0.875rem; }
 .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; font-family: inherit; }
@@ -158,7 +150,7 @@ body {
 .form-actions .btn { flex: 1; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
-/* ── Profile modal ── */
+/* profile */
 .profile-modal { max-width: 600px; }
 .profile-section { display: flex; flex-direction: column; gap: 1.5rem; }
 .profile-picture-section { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 1rem; background: #f9f9f9; border-radius: 8px; }
@@ -166,7 +158,7 @@ body {
 .profile-picture img { width: 100%; height: 100%; object-fit: cover; }
 .profile-placeholder { width: 100%; height: 100%; background: linear-gradient(135deg, #E07A3F 0%, #764ba2 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 700; }
 
-/* ── Auth pages ── */
+/* auth page */
 .auth-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #E07A3F 0%, #764ba2 100%); }
 .auth-card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 400px; max-width: 90%; }
 .auth-header { text-align: center; margin-bottom: 2rem; }
@@ -176,13 +168,13 @@ body {
 .auth-form h2   { margin-bottom: 1.5rem; color: #333; }
 .auth-form button { width: 100%; margin-top: 1rem; }
 
-/* ── Add Employee form ── */
+/* add employee form */
 .add-employee-form { background: #f9f9f9; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px dashed #ddd; }
 .add-employee-form h3 { margin-bottom: 1rem; font-size: 0.95rem; color: #555; }
 .add-employee-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; }
 .add-employee-grid .form-group { margin-bottom: 0; }
 
-/* ── Leave section ── */
+/* leave section */
 .leave-history-section { background: white; padding: 1.5rem 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem; }
 .leave-history-section h3 { margin-bottom: 1rem; font-size: 1rem; }
 .leave-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
@@ -191,7 +183,7 @@ body {
 .reason-cell { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .leave-modal { max-width: 520px; }
 
-/* ── Leave cards (admin) ── */
+/*Leave cards (admin) */
 .leave-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
 .leave-card { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); overflow: hidden; border-left: 4px solid #e5e7eb; }
 .leave-card-pending  { border-left-color: #f59e0b; }
@@ -207,10 +199,10 @@ body {
 .leave-applied { color: #999; font-size: 0.75rem; }
 .leave-card-actions { display: flex; gap: 0.75rem; padding: 0.75rem 1.25rem; background: #f9f9f9; border-top: 1px solid #f0f0f0; }
 
-/* ── Empty state ── */
+/* Empty state*/
 .empty-state { text-align: center; padding: 3rem; color: #aaa; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 2rem; }
 
-/* ── Responsive ── */
+/*Responsive*/
 @media (max-width: 768px) {
     .main-container { padding: 0 1rem; }
     .stats-grid { grid-template-columns: repeat(2, 1fr); }

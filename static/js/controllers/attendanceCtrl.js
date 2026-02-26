@@ -1,8 +1,3 @@
-// ═══════════════════════════════════════════════════════════════
-//  DJUBO — static/js/controllers/attendanceCtrl.js
-//  Employee dashboard: check-in/out, breaks, calendar, leaves
-// ═══════════════════════════════════════════════════════════════
-
 app.controller('EmployeeController', function($scope, $interval, $window, $timeout, AttendanceService) {
     var vm       = this;
     var mainCtrl = $scope.$parent.main;
@@ -21,13 +16,13 @@ app.controller('EmployeeController', function($scope, $interval, $window, $timeo
 
     var attendanceData = AttendanceService.getAttendance(mainCtrl.currentUser.employeeId);
 
-    // ── AUTO-ABSENT: seed from employee's join date ──
+    // AUTO-ABSENT: seed from employee's join date
     var joinDate = mainCtrl.currentUser.createdAt || mainCtrl.currentUser.joinDate;
     if (joinDate && seedAbsent(attendanceData, joinDate)) {
         AttendanceService.saveAttendance(mainCtrl.currentUser.employeeId, attendanceData);
     }
 
-    // ── UNDERSCORE.JS ── tally stats
+    //UNDERSCORE.JS tally stats
     var presentRecs = _.filter(attendanceData, function(d) { return d.status === 'present' || d.status === 'late'; });
     vm.stats = {
         presentDays:    presentRecs.length,
@@ -51,7 +46,7 @@ app.controller('EmployeeController', function($scope, $interval, $window, $timeo
         return vm.todayStatus.checkIn ? moment(vm.todayStatus.checkIn).fromNow() : '';
     };
 
-    // ── Calendar ──
+    // Calendar
     vm.weekDays     = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     vm.currentMonth = moment();
     vm.calendarDays = [];
@@ -90,12 +85,12 @@ app.controller('EmployeeController', function($scope, $interval, $window, $timeo
     vm.calendarMonthDisplay = function() { return vm.currentMonth.format('MMMM YYYY'); };
     vm.generateCalendar();
 
-    // ── Recent activity ──
+    // Recent activity
     vm.recentActivity = _.map(_.last(_.filter(attendanceData, function(r) { return r.checkIn; }), 5).reverse(), function(r) {
         return { text: 'Checked in ' + moment(r.checkIn).fromNow(), date: moment(r.date).format('MMM D, YYYY') };
     });
 
-    // ── HIGHCHARTS ── Analytics charts
+    //HIGHCHARTS Analytics charts
     vm.renderAttendanceChart = function() {
         if (typeof Highcharts === 'undefined') {
             console.warn('Highcharts not loaded yet — retrying in 500ms');
@@ -144,7 +139,7 @@ app.controller('EmployeeController', function($scope, $interval, $window, $timeo
         if (vm.showChart) $timeout(vm.renderAttendanceChart, 150);
     };
 
-    // ── CHECK IN / OUT ──
+    //CHECK IN / OUT
     vm.checkIn = function() {
         var now    = moment();
         var cutoff = now.clone().startOf('day').add(10, 'hours').add(10, 'minutes');
@@ -166,7 +161,7 @@ app.controller('EmployeeController', function($scope, $interval, $window, $timeo
         alert('Check-out successful! You worked ' + vm.todayStatus.workDuration + ' today.');
     };
 
-    // ── BREAK ──
+    //BREAk
     vm.startBreak = function() {
         vm.onBreak = mainCtrl.onBreak = true;
         vm.breakStartTime = new Date();

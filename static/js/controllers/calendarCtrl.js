@@ -1,8 +1,3 @@
-// ═══════════════════════════════════════════════════════════════
-//  DJUBO — static/js/controllers/calendarCtrl.js
-//  Admin dashboard: employee table, charts, leave management
-// ═══════════════════════════════════════════════════════════════
-
 app.controller('AdminController', function($scope, $timeout, AttendanceService) {
     var vm = this;
 
@@ -20,7 +15,7 @@ app.controller('AdminController', function($scope, $timeout, AttendanceService) 
     var hotInstance = null;
     var users = AttendanceService.getUsers();
 
-    // ── AUTO-ABSENT: seed for every employee ──
+// AUTO-ABSENT: seed for every employee  
     _.each(_.filter(users, { role: 'employee' }), function(user) {
         var records  = AttendanceService.getAttendance(user.employeeId);
         var joinDate = user.createdAt || user.joinDate;
@@ -29,7 +24,7 @@ app.controller('AdminController', function($scope, $timeout, AttendanceService) 
         }
     });
 
-    // ── Build employee list ──
+// Build employee list  
     vm.employees = _.map(_.filter(users, { role: 'employee' }), function(user) {
         var attendance = AttendanceService.getAttendance(user.employeeId);
         var todayRec   = _.find(attendance, function(d) { return moment(d.date).isSame(moment(), 'day'); });
@@ -76,7 +71,7 @@ app.controller('AdminController', function($scope, $timeout, AttendanceService) 
     };
     vm.closeModal = function() { vm.selectedEmp = null; };
 
-    // ── ADD EMPLOYEE ──
+    // ADD EMPLOYEE  
     vm.openAddForm  = function() { vm.newEmp = {}; vm.showAddForm = true; };
     vm.closeAddForm = function() { vm.showAddForm = false; };
 
@@ -109,7 +104,7 @@ app.controller('AdminController', function($scope, $timeout, AttendanceService) 
         vm.showAddForm = false;
     };
 
-    // ── HIGHCHARTS ── Admin charts
+    //  HIGHCHARTS   Admin charts
     vm.renderAdminCharts = function() {
         if (typeof Highcharts === 'undefined') {
             console.warn('Highcharts not loaded yet — retrying in 500ms');
@@ -168,7 +163,7 @@ app.controller('AdminController', function($scope, $timeout, AttendanceService) 
         });
     }
 
-    // ── HANDSONTABLE ──
+    //   HANDSONTABLE  
     function _buildHOTData(employees) {
         return _.map(employees, function(e) {
             return [e.id, e.name, e.department,
@@ -239,7 +234,7 @@ app.controller('AdminController', function($scope, $timeout, AttendanceService) 
         if (n !== o) vm.updateHOTFilter();
     });
 
-    // ── LEAVE MANAGEMENT ──
+    //  LEAVE MANAGEMENT
     vm.allLeaves = _.sortBy(
         AttendanceService.getAllLeaves(),
         function(l) { return -moment(l.appliedOn, 'YYYY-MM-DD HH:mm:ss').valueOf(); }

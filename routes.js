@@ -1,20 +1,8 @@
-// ═══════════════════════════════════════════════════════════════
-//  DJUBO — routes.js
-//  index.html body = <div ng-view> only.
-//
-//  Flow:
-//    /#/          → redirect to /#/dashboard or /#/admin
-//    /#/dashboard → layout.html shell (MainController)
-//                   layout.html ng-includes my-day.html
-//    /#/admin     → layout.html shell (MainController)
-//                   layout.html ng-includes settings.html
-// ═══════════════════════════════════════════════════════════════
-
 app.config(function($routeProvider) {
 
     $routeProvider
 
-        // ── Root: redirect based on logged-in role ──
+        // Root: redirect based on logged-in role
         .when('/', {
             redirectTo: function() {
                 var user = JSON.parse(localStorage.getItem('currentUser') || 'null');
@@ -23,7 +11,7 @@ app.config(function($routeProvider) {
             }
         })
 
-        // ── Employee dashboard — loads layout shell ──
+        // ── Employee dashboard — loads layout shell 
         .when('/dashboard', {
             templateUrl:  'static/partial/layout.html',
             controller:   'MainController',
@@ -37,7 +25,7 @@ app.config(function($routeProvider) {
             }
         })
 
-        // ── Admin dashboard — loads layout shell ──
+        //Admin dashboard — loads layout shell 
         .when('/admin', {
             templateUrl:  'static/partial/layout.html',
             controller:   'MainController',

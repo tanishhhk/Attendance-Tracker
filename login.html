@@ -1,19 +1,44 @@
 <!DOCTYPE html>
-<html ng-app="djuboAttendanceApp">
+<html lang="en" ng-app="djuboAttendanceApp">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Djubo - Login</title>
-    <link rel="stylesheet" href="styles.css">
+
+    <!-- ── Fonts ── -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- ── App Styles ── -->
+    <link rel="stylesheet" href="static/styles/styles.css">
+
+    <!-- Hides {{ }} flicker until Angular is ready -->
+    <style>[ng-cloak] { display: none !important; }</style>x
+
+    <!-- ── External Libraries (in head so Angular boots before body renders) ── -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-route/1.8.3/angular-route.min.js"
+            integrity="sha512-y1qD3hz/IAf8W4+/UMLZ+CN6LIoUGi7srWJ3r1R17Hid8x0yXe+1B5ZelkaL1Mjzedzu0Cg3HBvDG02SAgSzBw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+
+    <!-- ── App Scripts ── -->
+    <script src="static/js/angular-app.js"></script>
+    <script src="static/js/services/attendance.service.js"></script>
+    <script src="static/js/directives/appDirectives.js"></script>
+    <script src="static/js/controllers/profileCardCtrl.js"></script>
+
 </head>
-<body ng-controller="AuthController as auth">
+<body ng-controller="AuthController as auth" ng-cloak>
+
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
-                <h1><img src="logo.png" alt="DJUBO" style="height:50px;" onerror="this.style.display='none'"></h1>
+                <h1>
+                    <img src="static/images/logo.png" alt="DJUBO" style="height:50px;"
+                         onerror="this.style.display='none'">
+                </h1>
                 <p>Attendance Management System</p>
-                <!-- MOMENT.JS: greeting + date -->
                 <p class="login-greeting">{{auth.greeting}} &mdash; {{auth.todayDisplay}}</p>
             </div>
             <div class="auth-form">
@@ -21,11 +46,13 @@
                 <form ng-submit="auth.login()">
                     <div class="form-group">
                         <label>Employee ID</label>
-                        <input type="text" ng-model="auth.credentials.employeeId" placeholder="e.g. EMP001" required auto-focus>
+                        <input type="text" ng-model="auth.credentials.employeeId"
+                               placeholder="e.g. EMP001" required auto-focus>
                     </div>
                     <div class="form-group">
                         <label>Password</label>
-                        <input type="password" ng-model="auth.credentials.password" placeholder="Enter your password" required>
+                        <input type="password" ng-model="auth.credentials.password"
+                               placeholder="Enter your password" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Login</button>
                 </form>
@@ -36,10 +63,5 @@
         </div>
     </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-    <script src="auth.js"></script>
 </body>
 </html>

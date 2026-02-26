@@ -1,0 +1,153 @@
+<!-- ═══════════════════════════════════════════════════════════════
+     DJUBO — static/partial/settings.html
+     Admin dashboard — ng-include from layout.html
+════════════════════════════════════════════════════════════════ -->
+
+<script>
+    if (!window.angular) {
+        var base = window.location.href.split("/static/")[0];
+        window.location.replace(base + "/index.html");
+    }
+</script>
+<div ng-controller="AdminController as admin">
+
+    <div class="stats-grid">
+        <div class="stat-card"><h3>{{admin.stats.totalEmployees}}</h3><p>Total Employees</p></div>
+        <div class="stat-card"><h3>{{admin.stats.presentToday}}</h3><p>Present Today</p></div>
+        <div class="stat-card"><h3>{{admin.stats.absentToday}}</h3><p>Absent Today</p></div>
+        <div class="stat-card"><h3>{{admin.stats.lateToday}}</h3><p>Late Today</p></div>
+    </div>
+
+    <div class="admin-tabs">
+        <button class="tab-btn" ng-class="{'tab-active': admin.activeTab==='attendance'}" ng-click="admin.activeTab='attendance'">
+            Attendance
+        </button>
+        <button class="tab-btn" ng-class="{'tab-active': admin.activeTab==='leaves'}" ng-click="admin.activeTab='leaves'">
+            Leave Requests
+            <span class="leave-badge" ng-if="admin.pendingLeavesCount > 0">{{admin.pendingLeavesCount}}</span>
+        </button>
+        <button class="tab-btn" ng-class="{'tab-active': admin.activeTab==='add'}" ng-click="admin.activeTab='add'">
+            + Add Employee
+        </button>
+    </div>
+
+    <!-- ── Attendance Tab ── -->
+    <div ng-if="admin.activeTab === 'attendance'">
+        <div class="section-toggle-bar">
+            <button ng-click="admin.toggleCharts()" class="btn btn-secondary">
+                {{admin.showCharts ? 'Hide Analytics' : 'Show Analytics'}}
+            </button>
+            <button ng-click="admin.exportReport()" class="btn btn-primary">Export CSV</button>
+        </div>
+        <div ng-if="admin.showCharts" class="charts-row">
+            <div class="chart-card"><div id="adminDeptChart" style="height:300px;"></div></div>
+            <div class="chart-card"><div id="adminStatusPie" style="height:300px;"></div></div>
+        </div>
+        <div class="admin-controls">
+            <input type="text" ng-model="admin.searchQuery" placeholder="Search by name or department...">
+            <select ng-model="admin.filterDept">
+                <option value="">All Departments</option>
+                <option ng-repeat="d in admin.departments" value="{{d}}">{{d}}</option>
+            </select>
+            <select ng-model="admin.filterStatus">
+                <option value="">All Status</option>
+                <option value="present">Present</option>
+                <option value="absent">Absent</option>
+                <option value="late">Late</option>
+                <option value="on-leave">On Leave</option>
+            </select>
+        </div>
+        <div class="hot-wrapper">
+            <p class="hot-hint">💡 Click any <em>Department</em> or <em>Status</em> cell to edit. Use ▼ on headers to sort &amp; filter.</p>
+            <div id="employeeHOT"></div>
+        </div>
+    </div>
+
+    <!-- ── Leave Requests Tab ── -->
+    <div ng-if="admin.activeTab === 'leaves'">
+        <div class="admin-controls">
+            <select ng-model="admin.leaveFilterStatus" style="max-width:220px;">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+            </select>
+        </div>
+        <div ng-if="admin.getFilteredLeaves().length === 0" class="empty-state">No leave requests found.</div>
+        <div class="leave-cards" ng-if="admin.getFilteredLeaves().length > 0">
+            <div class="leave-card" ng-repeat="l in admin.getFilteredLeaves()" ng-class="'leave-card-' + l.status">
+                <div class="leave-card-header">
+                    <div><strong>{{l.employeeName}}</strong><span class="leave-dept-tag">{{l.department}}</span></div>
+                    <span ng-class="admin.leaveStatusClass(l.status)">{{l.status}}</span>
+                </div>
+                <div class="leave-card-body">
+                    <div class="leave-meta-row">
+                        <span class="leave-type-pill">{{l.type}}</span>
+                        <span class="leave-dates">{{l.fromDate}} → {{l.toDate}} <strong>({{l.days}} day{{l.days > 1 ? 's' : ''}})</strong></span>
+                    </div>
+                    <p class="leave-reason">"{{l.reason}}"</p>
+                    <p class="leave-applied">Applied: {{l.appliedOn | date:'MMM d, yyyy – HH:mm'}}</p>
+                    <p ng-if="l.decidedOn" class="leave-applied">Decision: {{l.decidedOn | date:'MMM d, yyyy – HH:mm'}}</p>
+                </div>
+                <div class="leave-card-actions" ng-if="l.status === 'pending'">
+                    <button ng-click="admin.approveLeave(l)" class="btn-approve">✓ Approve</button>
+                    <button ng-click="admin.rejectLeave(l)"  class="btn-reject">✗ Reject</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Add Employee Tab ── -->
+    <div ng-if="admin.activeTab === 'add'">
+        <div class="add-employee-form">
+            <h3>Create Employee Account</h3>
+            <div class="add-employee-grid">
+                <div class="form-group"><label>Full Name</label><input type="text" ng-model="admin.newEmp.name" placeholder="Full Name"></div>
+                <div class="form-group"><label>Employee ID</label><input type="text" ng-model="admin.newEmp.employeeId" placeholder="e.g. EMP004"></div>
+                <div class="form-group">
+                    <label>Department</label>
+                    <select ng-model="admin.newEmp.department">
+                        <option value="">Select...</option>
+                        <option ng-repeat="d in admin.departments" value="{{d}}">{{d}}</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Email</label><input type="email" ng-model="admin.newEmp.email" placeholder="name@djubo.com"></div>
+                <div class="form-group"><label>Password</label><input type="password" ng-model="admin.newEmp.password" placeholder="Initial password"></div>
+            </div>
+            <div class="form-actions" style="margin-top:1.25rem;">
+                <button ng-click="admin.addEmployee()" class="btn btn-primary">Create Account</button>
+            </div>
+        </div>
+        <div class="empty-state" ng-if="admin.employees.length === 0">No employees yet.</div>
+        <div ng-if="admin.employees.length > 0">
+            <p style="margin-bottom:0.75rem; color:#666; font-size:0.875rem;">Existing employees ({{admin.employees.length}})</p>
+            <table class="leave-table">
+                <thead><tr><th>ID</th><th>Name</th><th>Department</th><th>Email</th><th>Joined</th></tr></thead>
+                <tbody>
+                    <tr ng-repeat="e in admin.employees">
+                        <td>{{e.id}}</td><td>{{e.name}}</td><td>{{e.department}}</td><td>{{e.email}}</td><td>{{e.joined}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Employee detail modal -->
+    <div class="modal" ng-if="admin.selectedEmp" ng-click="admin.closeModal()">
+        <div class="modal-content" style="max-width:520px;" ng-click="$event.stopPropagation()">
+            <div class="modal-header">
+                <h2>{{admin.selectedEmp.name}}</h2>
+                <button ng-click="admin.closeModal()" class="btn-close">Close</button>
+            </div>
+            <div class="details">
+                <p><strong>Department:</strong> {{admin.selectedEmp.department}}</p>
+                <p><strong>Email:</strong> {{admin.selectedEmp.email}}</p>
+                <p><strong>Attendance Rate:</strong> {{admin.selectedEmp.attendanceRate}}%</p>
+                <p><strong>Present Days:</strong> {{admin.selectedEmp.presentDays}}</p>
+                <p><strong>Joined:</strong> {{admin.selectedEmp.joined}}</p>
+            </div>
+            <div id="employeeSparkline" style="height:200px; margin-top:1rem;"></div>
+        </div>
+    </div>
+
+</div>

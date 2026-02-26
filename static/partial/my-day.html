@@ -1,0 +1,140 @@
+<!-- ═══════════════════════════════════════════════════════════════
+     DJUBO — static/partial/my-day.html
+     Employee dashboard — ng-include from layout.html
+════════════════════════════════════════════════════════════════ -->
+
+<script>
+    if (!window.angular) {
+        var base = window.location.href.split("/static/")[0];
+        window.location.replace(base + "/index.html");
+    }
+</script>
+<div ng-controller="EmployeeController as emp">
+
+    <div class="stats-grid">
+        <div class="stat-card"><h3>{{emp.stats.presentDays}}</h3><p>Days Present</p></div>
+        <div class="stat-card"><h3>{{emp.stats.absentDays}}</h3><p>Days Absent</p></div>
+        <div class="stat-card"><h3>{{emp.stats.lateDays}}</h3><p>Late Arrivals</p></div>
+        <div class="stat-card"><h3>{{emp.stats.attendanceRate}}%</h3><p>Attendance Rate</p></div>
+    </div>
+
+    <div class="checkin-card">
+        <h2>Today's Attendance</h2>
+        <div class="current-time">{{emp.currentTime | date:'EEEE, MMMM d, yyyy – HH:mm:ss'}}</div>
+        <div class="checkin-status" ng-if="emp.todayStatus.checkIn">
+            <div class="status-row">
+                <span>Check In:</span>
+                <strong>{{emp.todayStatus.checkIn | date:'HH:mm:ss'}} <span class="time-ago">({{emp.checkInFromNow()}})</span></strong>
+            </div>
+            <div class="status-row" ng-if="emp.todayStatus.checkOut">
+                <span>Check Out:</span><strong>{{emp.todayStatus.checkOut | date:'HH:mm:ss'}}</strong>
+            </div>
+            <div class="status-row" ng-if="emp.todayStatus.workDuration">
+                <span>Work Duration:</span><strong>{{emp.todayStatus.workDuration}}</strong>
+            </div>
+            <div class="status-row" ng-if="emp.todayStatus.totalBreakTime">
+                <span>Total Break:</span><strong>{{emp.todayStatus.totalBreakTime}}</strong>
+            </div>
+        </div>
+        <div class="checkin-actions">
+            <button ng-if="!emp.todayStatus.checkIn" ng-click="emp.checkIn()" class="btn btn-primary">Check In</button>
+            <div ng-if="emp.todayStatus.checkIn && !emp.todayStatus.checkOut" class="action-group">
+                <button ng-if="!emp.onBreak" ng-click="emp.startBreak()" class="btn btn-secondary">Start Break</button>
+                <button ng-click="emp.checkOut()" class="btn btn-primary">Check Out</button>
+            </div>
+            <div ng-if="emp.todayStatus.checkOut" class="completed-msg">✓ Attendance marked for today</div>
+        </div>
+    </div>
+
+    <div class="section-toggle-bar">
+        <button ng-click="emp.toggleChart()" class="btn btn-secondary">
+            {{emp.showChart ? 'Hide Analytics' : 'Show Analytics'}}
+        </button>
+        <button ng-click="emp.openLeaveForm()" class="btn-leave">+ Apply for Leave</button>
+    </div>
+
+    <div ng-if="emp.showChart" class="charts-row">
+        <div class="chart-card"><div id="attendanceChart" style="height:280px;"></div></div>
+        <div class="chart-card"><div id="attendancePie"   style="height:280px;"></div></div>
+    </div>
+
+    <div class="calendar-section">
+        <div class="calendar-header">
+            <button ng-click="emp.previousMonth()" class="btn-nav">&#8592; Prev</button>
+            <h2>{{emp.calendarMonthDisplay()}}</h2>
+            <button ng-click="emp.nextMonth()" class="btn-nav">Next &#8594;</button>
+        </div>
+        <div class="calendar-grid">
+            <div class="calendar-day header" ng-repeat="d in emp.weekDays">{{d}}</div>
+            <div class="calendar-day"
+                 ng-repeat="day in emp.calendarDays"
+                 title="{{day.tooltip}}"
+                 ng-class="{'other-month':!day.isCurrentMonth,'today':day.isToday,
+                            'present':day.status==='present','absent':day.status==='absent',
+                            'late':day.status==='late','on-leave':day.status==='on-leave'}">
+                {{day.date}}
+            </div>
+        </div>
+        <div class="calendar-legend">
+            <span><span class="dot present"></span> Present</span>
+            <span><span class="dot late"></span> Late</span>
+            <span><span class="dot absent"></span> Absent</span>
+            <span><span class="dot on-leave"></span> On Leave</span>
+        </div>
+    </div>
+
+    <div class="activity-section" ng-if="emp.recentActivity.length > 0">
+        <h3>Recent Activity</h3>
+        <ul class="activity-list">
+            <li ng-repeat="a in emp.recentActivity">
+                <span class="activity-date">{{a.date}}</span>
+                <span class="activity-text">{{a.text}}</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="leave-history-section" ng-if="emp.myLeaves.length > 0">
+        <h3>My Leave Requests</h3>
+        <table class="leave-table">
+            <thead><tr><th>Type</th><th>From</th><th>To</th><th>Days</th><th>Reason</th><th>Applied</th><th>Status</th></tr></thead>
+            <tbody>
+                <tr ng-repeat="l in emp.myLeaves | orderBy:'-appliedOn'">
+                    <td>{{l.type}}</td><td>{{l.fromDate}}</td><td>{{l.toDate}}</td>
+                    <td>{{l.days}}</td><td class="reason-cell">{{l.reason}}</td>
+                    <td>{{l.appliedOn | date:'MMM d, HH:mm'}}</td>
+                    <td><span ng-class="emp.leaveStatusClass(l.status)">{{l.status}}</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Leave application modal -->
+    <div class="modal" ng-if="emp.showLeaveForm" ng-click="emp.closeLeaveForm()">
+        <div class="modal-content leave-modal" ng-click="$event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Apply for Leave</h2>
+                <button ng-click="emp.closeLeaveForm()" class="btn-close">Close</button>
+            </div>
+            <div class="form-group">
+                <label>Leave Type</label>
+                <select ng-model="emp.leaveForm.type" required>
+                    <option value="">-- Select Type --</option>
+                    <option ng-repeat="t in emp.leaveTypes" value="{{t}}">{{t}}</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>From Date</label><input type="date" ng-model="emp.leaveForm.fromDate"></div>
+                <div class="form-group"><label>To Date</label><input type="date" ng-model="emp.leaveForm.toDate"></div>
+            </div>
+            <div class="form-group">
+                <label>Reason</label>
+                <textarea ng-model="emp.leaveForm.reason" rows="3" placeholder="Briefly describe the reason..."></textarea>
+            </div>
+            <div class="form-actions">
+                <button ng-click="emp.submitLeave()" class="btn btn-primary">Submit Request</button>
+                <button ng-click="emp.closeLeaveForm()" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -15,14 +15,8 @@ body {
     line-height: 1.6;
 }
 
-/* ── Shared card ── used by checkin-card, calendar-section, activity-section, etc. */
-.card {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    padding: 1.5rem 2rem;
-    margin-bottom: 2rem;
-}
+/* ── Shared card ── */
+.card { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 1.5rem 2rem; margin-bottom: 2rem; }
 .card h2, .card h3 { margin-bottom: 1rem; }
 
 /* ── Header ── */
@@ -35,29 +29,27 @@ body {
 .user-role { padding: 0.25rem 0.75rem; background: rgba(255,255,255,0.2); border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; }
 .last-login { font-size: 0.7rem; opacity: 0.8; margin-top: 2px; }
 
-/* ── Buttons — base + variants ── */
-.btn, .btn-nav, .btn-close, .btn-approve, .btn-reject, .btn-small {
-    border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-family: inherit;
-}
+/* ── Buttons ── */
+.btn, .btn-nav, .btn-close, .btn-approve, .btn-reject, .btn-small { border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-family: inherit; }
 .btn { padding: 0.75rem 1.5rem; font-size: 1rem; }
 .btn-primary   { background: #E07A3F; color: white; }
 .btn-primary:hover   { background: #c9612a; }
 .btn-secondary { background: #f59e0b; color: white; }
 .btn-secondary:hover { background: #d97706; }
-.btn-leave     { background: #f59e0b; color: white; padding: 0.75rem 1.5rem; font-size: 1rem; }
+.btn-leave     { background: #f59e0b; color: white; padding: 0.75rem 1.5rem; font-size: 1rem; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
 .btn-leave:hover     { background: #d97706; }
-.btn-logout    { background: white; color: #E07A3F; padding: 0.5rem 1rem; }
+.btn-logout    { background: white; color: #E07A3F; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
 .btn-logout:hover    { background: #f0f0f0; }
-.btn-profile   { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 0.5rem 1rem; }
+.btn-profile   { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: 600; }
 .btn-profile:hover   { background: rgba(255,255,255,0.3); }
 .btn-nav       { background: #E07A3F; color: white; padding: 0.5rem 1rem; }
 .btn-nav:hover       { background: #c9612a; }
 .btn-close     { background: #ef4444; color: white; padding: 0.5rem 1rem; }
 .btn-small     { background: #E07A3F; color: white; padding: 0.4rem 0.8rem; font-size: 0.875rem; }
 .btn-small:hover     { background: #c9612a; }
-.btn-approve   { flex: 1; padding: 0.5rem; background: #10b981; color: white; }
+.btn-approve   { flex: 1; padding: 0.5rem; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
 .btn-approve:hover   { background: #059669; }
-.btn-reject    { flex: 1; padding: 0.5rem; background: #ef4444; color: white; }
+.btn-reject    { flex: 1; padding: 0.5rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
 .btn-reject:hover    { background: #dc2626; }
 
 /* ── Badges ── */
@@ -70,7 +62,7 @@ body {
 .badge.approved { background: #d1fae5; color: #065f46; }
 .badge.rejected { background: #fee2e2; color: #991b1b; }
 
-/* ── Dots (calendar legend) ── */
+/* ── Dots ── */
 .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
 .dot.present  { background: #E07A3F; }
 .dot.late     { background: #f59e0b; }
@@ -81,12 +73,7 @@ body {
 .main-container { max-width: 1200px; margin: 2rem auto; padding: 0 2rem; }
 
 /* ── Stats Grid ── */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
 .stat-card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
 .stat-card h3 { font-size: 2rem; color: #E07A3F; margin-bottom: 0.5rem; }
 .stat-card p  { color: #666; font-size: 0.875rem; }
@@ -138,7 +125,6 @@ body {
 .admin-controls { background: white; padding: 1.25rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap; }
 .admin-controls input { flex: 1; min-width: 180px; }
 .admin-controls input, .admin-controls select { padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9rem; }
-
 .admin-tabs { display: flex; margin-bottom: 1.5rem; border-bottom: 2px solid #e5e7eb; }
 .tab-btn { padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 3px solid transparent; margin-bottom: -2px; cursor: pointer; font-weight: 600; color: #666; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; }
 .tab-btn:hover { color: #E07A3F; }
@@ -148,8 +134,6 @@ body {
 /* ── Handsontable wrapper ── */
 .hot-wrapper { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 1rem 1rem 1.5rem; margin-bottom: 1.5rem; overflow: hidden; }
 .hot-hint { font-size: 0.8rem; color: #666; background: #fffbeb; border-left: 3px solid #f59e0b; padding: 0.5rem 0.75rem; border-radius: 0 4px 4px 0; margin-bottom: 0.75rem; }
-#employeeHOT .htCore td, #employeeHOT .htCore th { font-family: 'Inter', Arial, sans-serif; font-size: 0.875rem; }
-#employeeHOT .htCore thead th { background: #f9f9f9; color: #555; font-weight: 600; }
 
 /* ── Modal ── */
 .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
@@ -164,12 +148,10 @@ body {
 .break-timer { font-size: 3rem; color: #E07A3F; font-weight: 700; margin: 1.5rem 0; }
 .break-modal p { margin-bottom: 1.5rem; color: #666; }
 
-/* ── Forms (shared between profile modal, leave modal, auth) ── */
+/* ── Forms ── */
 .form-group { margin-bottom: 1rem; }
 .form-group label { display: block; margin-bottom: 0.5rem; color: #666; font-size: 0.875rem; }
-.form-group input, .form-group select, .form-group textarea {
-    width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; font-family: inherit;
-}
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; font-family: inherit; }
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #E07A3F; }
 .form-group textarea { resize: vertical; }
 .form-actions { display: flex; gap: 1rem; margin-top: 1rem; }
@@ -194,7 +176,7 @@ body {
 .auth-form h2   { margin-bottom: 1.5rem; color: #333; }
 .auth-form button { width: 100%; margin-top: 1rem; }
 
-/* ── Admin: Add Employee form (inside panel) ── */
+/* ── Add Employee form ── */
 .add-employee-form { background: #f9f9f9; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px dashed #ddd; }
 .add-employee-form h3 { margin-bottom: 1rem; font-size: 0.95rem; color: #555; }
 .add-employee-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; }

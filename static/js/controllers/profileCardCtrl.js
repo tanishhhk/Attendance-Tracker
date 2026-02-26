@@ -3,7 +3,7 @@ app.controller('AuthController', function($scope, $window, $location, Attendance
 
     vm.credentials = { employeeId: '', password: '' };
 
-    // ── MOMENT.JS ── Greeting + date on login page
+    // MOMENT.JS Greeting + date on login page
     vm.greeting = (function() {
         var h = moment().hour();
         return h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';

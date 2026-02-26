@@ -2,7 +2,7 @@ app.config(function($routeProvider) {
 
     $routeProvider
 
-        // Root: redirect based on logged-in role
+        //root redirect based on login role
         .when('/', {
             redirectTo: function() {
                 var user = JSON.parse(localStorage.getItem('currentUser') || 'null');
@@ -11,7 +11,7 @@ app.config(function($routeProvider) {
             }
         })
 
-        // ── Employee dashboard — loads layout shell 
+        //employee dashboard — loads layout shell 
         .when('/dashboard', {
             templateUrl:  'static/partial/layout.html',
             controller:   'MainController',
@@ -25,7 +25,7 @@ app.config(function($routeProvider) {
             }
         })
 
-        //Admin dashboard — loads layout shell 
+        //admin dashboard — loads layout shell 
         .when('/admin', {
             templateUrl:  'static/partial/layout.html',
             controller:   'MainController',

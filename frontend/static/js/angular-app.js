@@ -11,6 +11,8 @@ function seedAbsent(records, joinDate) {
     var cursor  = start.clone();
     var changed = false;
 
+    moment().format('YYYY-MM-DD');
+
     while (cursor.isBefore(today)) {
         var dow = cursor.day();
         if (dow !== 0 && dow !== 6) {         

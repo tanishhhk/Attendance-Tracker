@@ -52,9 +52,39 @@
                 <option value="on-leave">On Leave</option>
             </select>
         </div>
+<!-- Replace the hot-wrapper div with this: -->
         <div class="hot-wrapper">
-            <p class="hot-hint">💡 Click any <em>Department</em> or <em>Status</em> cell to edit. Use ▼ on headers to sort &amp; filter.</p>
-            <div id="employeeHOT"></div>
+            <table class="leave-table" ng-if="admin.attendanceList.length > 0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Status</th>
+                        <th>Check In</th>
+                        <th>Check Out</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="e in admin.attendanceList
+                        | filter: admin.searchQuery
+                        | filter: {status: admin.filterStatus}">
+                        <td>{{e.name}}</td>
+                        <td>{{e.username}}</td>
+                        <td>
+                                <span ng-class="e.status === 'present' ? 'badge present' :
+                                                e.status === 'late'    ? 'badge late'    :
+                                                e.status === 'absent'  ? 'badge absent'  : 'badge'">
+                                    {{e.status === 'not_checked_in' ? 'Not checked in' : e.status}}
+                                </span>
+                        </td>
+                        <td>{{e.check_in    | date:'HH:mm:ss'}}</td>
+                        <td>{{e.check_out   | date:'HH:mm:ss'}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="empty-state" ng-if="!admin.attendanceList || admin.attendanceList.length === 0">
+                No attendance records for today.
+            </div>
         </div>
     </div>
 

@@ -9,7 +9,7 @@
 
     <link rel="stylesheet" href="static/styles/styles.css">
 
-    <style>[ng-cloak] { display: none !important; }</style>x
+    <style>[ng-cloak] { display: none !important; }</style>
 
     <!-- ── External Libraries (in head so Angular boots before body renders) ── -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
@@ -23,6 +23,7 @@
     <script src="static/js/services/attendance.service.js"></script>
     <script src="static/js/directives/appDirectives.js"></script>
     <script src="static/js/controllers/profileCardCtrl.js"></script>
+    <script src="static/js/controllers/authCtrl.js"></script>
 
 </head>
 <body ng-controller="AuthController as auth" ng-cloak>
@@ -41,9 +42,9 @@
                 <h2>Login</h2>
                 <form ng-submit="auth.login()">
                     <div class="form-group">
-                        <label>Employee ID</label>
-                        <input type="text" ng-model="auth.credentials.employeeId"
-                               placeholder="e.g. EMP001" required auto-focus>
+                       <label>Username</label>
+                        <input type="text" ng-model="auth.credentials.username"
+                             placeholder="Enter your username" required auto-focus>
                     </div>
                     <div class="form-group">
                         <label>Password</label>
@@ -51,6 +52,9 @@
                                placeholder="Enter your password" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Login</button>
+                    <p style="color:red; text-align:center;" ng-show="auth.errorMsg">
+    {{auth.errorMsg}}
+</p>
                 </form>
                 <p style="text-align:center; margin-top:1rem; font-size:0.8rem; color:#999;">
                     Don't have access? Contact your admin to create an account.

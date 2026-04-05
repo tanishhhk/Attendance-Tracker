@@ -1,34 +1,42 @@
 app.controller('MainController', function($scope, $window, $interval, $location, AttendanceService) {
     var vm = this;
 
-    var currentUser = localStorage.getItem('currentUser');
-    if (!currentUser) { $window.location.href = 'login.html'; return; }
+    // ── AUTH CHECK ──────────────────────────────────────────
+    if (!AttendanceService.isLoggedIn()) {
+        $window.location.href = 'login.html';
+        return;
+    }
 
-    vm.currentUser = JSON.parse(currentUser);
+    vm.currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     vm.onBreak     = false;
     vm.breakTimer  = '00:00:00';
     vm.showProfile = false;
     vm.profileData = {};
 
-    // MOMENT.JS Last login relative time in header
     vm.lastLoginDisplay = vm.currentUser.lastLogin
         ? 'Last login: ' + moment(vm.currentUser.lastLogin, 'YYYY-MM-DD HH:mm:ss').fromNow()
         : '';
 
+    // ── PROFILE ─────────────────────────────────────────────
+    // Profile data comes from currentUser stored at login time
+    // (backend doesn't have a profile endpoint yet — kept local for now)
     vm.loadProfileData = function() {
-        var users = AttendanceService.getUsers();
-        var user  = _.find(users, function(u) { return u.employeeId === vm.currentUser.employeeId; });
-        if (user) {
-            vm.profileData = _.extend(
-                _.pick(user, 'name', 'employeeId', 'email', 'department', 'dob', 'phone', 'address', 'profilePicture'),
-                { profilePicture: user.profilePicture || '' }
-            );
-        }
+        vm.profileData = {
+            name:           vm.currentUser.name           || '',
+            email:          vm.currentUser.email          || '',
+            department:     vm.currentUser.department     || '',
+            dob:            vm.currentUser.dob            || '',
+            phone:          vm.currentUser.phone          || '',
+            address:        vm.currentUser.address        || '',
+            profilePicture: vm.currentUser.profilePicture || ''
+        };
     };
+
     vm.loadProfileData();
 
     vm.openProfile  = function() { vm.loadProfileData(); vm.showProfile = true; };
     vm.closeProfile = function() { vm.showProfile = false; };
+
     vm.triggerFileUpload = function() { $('#profilePicture').click(); };
 
     $(document).ready(function() {
@@ -37,31 +45,38 @@ app.controller('MainController', function($scope, $window, $interval, $location,
             if (!file) return;
             var reader = new FileReader();
             reader.onload = function(ev) {
-                $scope.$apply(function() { vm.profileData.profilePicture = ev.target.result; });
+                $scope.$apply(function() {
+                    vm.profileData.profilePicture = ev.target.result;
+                });
             };
             reader.readAsDataURL(file);
         });
     });
 
     vm.saveProfile = function() {
-        var users = AttendanceService.getUsers();
-        var idx   = _.findIndex(users, { employeeId: vm.currentUser.employeeId });
-        if (idx > -1) {
-            users[idx] = _.extend(users[idx], {
-                name: vm.profileData.name, email: vm.profileData.email,
-                department: vm.profileData.department, dob: vm.profileData.dob,
-                phone: vm.profileData.phone, address: vm.profileData.address,
-                profilePicture: vm.profileData.profilePicture,
-                profileUpdatedAt: moment().format('YYYY-MM-DD HH:mm:ss')
-            });
-            AttendanceService.saveUsers(users);
-            vm.currentUser = _.extend(vm.currentUser, _.pick(users[idx], 'name', 'email', 'department', 'profilePicture'));
-            localStorage.setItem('currentUser', JSON.stringify(vm.currentUser));
-            alert('Profile updated successfully!');
-            vm.showProfile = false;
-        }
+        // Save updated profile locally until backend profile API is built
+        vm.currentUser = angular.extend(vm.currentUser, {
+            name:             vm.profileData.name,
+            email:            vm.profileData.email,
+            department:       vm.profileData.department,
+            dob:              vm.profileData.dob,
+            phone:            vm.profileData.phone,
+            address:          vm.profileData.address,
+            profilePicture:   vm.profileData.profilePicture,
+            profileUpdatedAt: moment().format('YYYY-MM-DD HH:mm:ss')
+        });
+        localStorage.setItem('currentUser', JSON.stringify(vm.currentUser));
+        alert('Profile updated successfully!');
+        vm.showProfile = false;
     };
 
-    vm.logout  = function() { localStorage.removeItem('currentUser'); $window.location.href = 'login.html'; };
+    // ── LOGOUT ──────────────────────────────────────────────
+    vm.logout = function() {
+        AttendanceService.logout();
+        localStorage.removeItem('currentUser');
+        $window.location.href = 'login.html';
+    };
+
+    // ── BREAK RELAY ─────────────────────────────────────────
     vm.endBreak = function() { $scope.$broadcast('endBreak'); };
 });

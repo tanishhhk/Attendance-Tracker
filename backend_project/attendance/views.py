@@ -6,8 +6,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.utils import timezone
 from datetime import timedelta
-from .models import Attendance, Break
+from .models import Attendance, Break, UserProfile
 from .serializers import AttendanceSerializer
+from attendance.models import UserProfile
 
 
 LATE_CUTOFF_HOUR = 9
@@ -226,6 +227,7 @@ class AttendanceViewSet(ModelViewSet):
         from django.utils import timezone
         
         today = timezone.localdate()
+        now = timezone.now()
         employees = User.objects.filter(is_staff=False)
         
         data = []
@@ -235,17 +237,25 @@ class AttendanceViewSet(ModelViewSet):
         
         for emp in employees:
             record = Attendance.objects.filter(user=emp, date=today).first()
+            profile = UserProfile.objects.filter(user=emp).first()
+            cutoff_absent = now.replace(hour=19, minute=0, second=0, microsecond=0)
+
             if record:
                 status = record.status
                 if status == 'present': present += 1
                 elif status == 'late':  late += 1
             else:
-                status = 'not_checked_in'
+                if now >= cutoff_absent:
+                    status = 'absent'
+                    absent += 1
+                else:
+                    status = 'not_checked_in'
             
             data.append({
                 "id":        emp.id,
                 "name":      emp.get_full_name() or emp.username,
                 "username":  emp.username,
+                "department": profile.department if profile else '-',
                 "status":    status,
                 "check_in":  record.check_in  if record else None,
                 "check_out": record.check_out if record else None,
@@ -256,7 +266,7 @@ class AttendanceViewSet(ModelViewSet):
             "stats": {
                 "total":   employees.count(),
                 "present": present,
-                "absent":  employees.count() - present - late,  # jo check in nahi kiya
+                "absent":  absent,
                 "late":    late,
             }
         })

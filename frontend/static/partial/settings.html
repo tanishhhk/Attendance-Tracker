@@ -52,36 +52,37 @@
                 <option value="on-leave">On Leave</option>
             </select>
         </div>
-<!-- Replace the hot-wrapper div with this: -->
+
         <div class="hot-wrapper">
-            <table class="leave-table" ng-if="admin.attendanceList.length > 0">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Username</th>
-                        <th>Status</th>
-                        <th>Check In</th>
-                        <th>Check Out</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="e in admin.attendanceList
-                        | filter: admin.searchQuery
-                        | filter: {status: admin.filterStatus}">
-                        <td>{{e.name}}</td>
-                        <td>{{e.username}}</td>
-                        <td>
-                                <span ng-class="e.status === 'present' ? 'badge present' :
-                                                e.status === 'late'    ? 'badge late'    :
-                                                e.status === 'absent'  ? 'badge absent'  : 'badge'">
-                                    {{e.status === 'not_checked_in' ? 'Not checked in' : e.status}}
-                                </span>
-                        </td>
-                        <td>{{e.check_in    | date:'HH:mm:ss'}}</td>
-                        <td>{{e.check_out   | date:'HH:mm:ss'}}</td>
-                    </tr>
-                </tbody>
-            </table>
+        <table class="leave-table" ng-if="admin.attendanceList.length > 0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Status</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="e in admin.attendanceList
+                    | filter: {name: admin.searchQuery}
+                    | filter: {department: admin.filterDept}
+                    | filter: {status: admin.filterStatus}">
+                    <td>{{e.name}}</td>
+                    <td>{{e.department}}</td>
+                    <td>
+                        <span ng-class="e.status === 'present' ? 'badge present' :
+                                        e.status === 'late'    ? 'badge late'    :
+                                        e.status === 'absent'  ? 'badge absent'  : 'badge'">
+                            {{e.status === 'not_checked_in' ? 'Not checked in' : e.status === 'late' ? 'Present (Late)' : e.status}}
+                        </span>
+                    </td>
+                    <td>{{e.check_in  | date:'HH:mm:ss'}}</td>
+                    <td>{{e.check_out | date:'HH:mm:ss'}}</td>
+                </tr>
+            </tbody>
+        </table>
             <div class="empty-state" ng-if="!admin.attendanceList || admin.attendanceList.length === 0">
                 No attendance records for today.
             </div>
@@ -147,10 +148,28 @@
         <div ng-if="admin.employees.length > 0">
             <p style="margin-bottom:0.75rem; color:#666; font-size:0.875rem;">Existing employees ({{admin.employees.length}})</p>
             <table class="leave-table">
-                <thead><tr><th>ID</th><th>Name</th><th>Department</th><th>Email</th><th>Joined</th></tr></thead>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Email</th>
+                        <th>Joined</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
                 <tbody>
                     <tr ng-repeat="e in admin.employees">
-                        <td>{{e.id}}</td><td>{{e.name}}</td><td>{{e.department}}</td><td>{{e.email}}</td><td>{{e.joined}}</td>
+                        <td>{{e.name}}</td>
+                        <td>{{e.department}}</td>
+                        <td>{{e.email}}</td>
+                        <td>{{e.joined}}</td>
+                        <td>
+                            <button ng-click="admin.deleteEmployee(e.id)" 
+                                    class="btn-reject" 
+                                    style="padding:4px 10px; font-size:0.75rem;">
+                                Delete
+                            </button>
+                        </td>
                     </tr>
                 </tbody>
             </table>

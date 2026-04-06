@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from attendance.views import AttendanceViewSet
-from .views import CreateEmployeeView, LoginView, home, PostList, PostViewSet, TestAuthView, EmployeeListView
+from .views import CreateEmployeeView, LoginView, home, PostList, PostViewSet, TestAuthView, EmployeeListView , DeleteEmployeeView
 
 router = DefaultRouter()
 router.register('posts', PostViewSet)
@@ -14,4 +14,5 @@ urlpatterns = [
     path('login/', LoginView.as_view()), 
     path('employees/create/', CreateEmployeeView.as_view(), name='create-employee'),
     path('employees/', EmployeeListView.as_view(), name='employee-list'),
+    path('employees/<int:pk>/delete/', DeleteEmployeeView.as_view()),
 ]

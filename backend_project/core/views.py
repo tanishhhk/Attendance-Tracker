@@ -1,9 +1,11 @@
 from multiprocessing.managers import Token
 from urllib import request
 from django.shortcuts import render
+from psutil import users
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from attendance.models import UserProfile
 from .models import Post
 from .serializers import PostSerializer
 from rest_framework.permissions import IsAuthenticated
@@ -81,6 +83,13 @@ class CreateEmployeeView(APIView):
             email=email,
             first_name=request.data.get('first_name', '')
         )
+        
+        UserProfile.objects.create(
+            user=user,
+            department=request.data.get('department', ''),
+            employee_id=username
+        )
+
 
         return Response({
             "message": "Employee created successfully",
@@ -89,6 +98,19 @@ class CreateEmployeeView(APIView):
             "email":    user.email,
         }, status=201)
     
+class DeleteEmployeeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        if not request.user.is_staff:
+            return Response({"error": "Not authorized"}, status=403)
+        try:
+            user = User.objects.get(pk=pk, is_staff=False)
+            user.delete()
+            return Response({"message": "Employee deleted"})
+        except User.DoesNotExist:
+            return Response({"error": "Not found"}, status=404)
+        
 class EmployeeListView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -99,12 +121,16 @@ class EmployeeListView(APIView):
         users = User.objects.filter(is_staff=False).values(
             'id', 'username', 'email', 'first_name', 'last_name', 'date_joined'
         )
-        data = [{
-            "id":         u['id'],
-            "username":   u['username'],
-            "name":       (u['first_name'] + ' ' + u['last_name']).strip() or u['username'],
-            "email":      u['email'],
-            "joined":     u['date_joined'].strftime('%Y-%m-%d'),
-        } for u in users]
+        data = []
+        for u in users:
+            profile = UserProfile.objects.filter(user_id=u['id']).first()
+            data.append({
+                "id":         u['id'],
+                "username":   u['username'],
+                "name":       (u['first_name'] + ' ' + u['last_name']).strip() or u['username'],
+                "email":      u['email'],
+                "department": profile.department if profile else '-',
+                "joined":     u['date_joined'].strftime('%Y-%m-%d'),
+            })
 
         return Response(data)

@@ -17,25 +17,14 @@ app.service('AttendanceService', function($http) {
     this.logout     = function()      { localStorage.removeItem('auth_token'); };
 
     // ATTENDANCE
-    this.checkIn  = function() { return $http.post(BASE + '/attendance/attendance/check_in/',  {}, { headers: authHeader() }); };
-    this.checkOut = function() { return $http.post(BASE + '/attendance/attendance/check_out/', {}, { headers: authHeader() }); };
-    this.getToday = function() { return $http.get(BASE  + '/attendance/attendance/today/',         { headers: authHeader() }); };
-    this.getStats = function() { return $http.get(BASE  + '/attendance/attendance/stats/',         { headers: authHeader() }); };
-    this.getAttendance = function() { return $http.get(BASE + '/attendance/attendance/',           { headers: authHeader() }); };
-
-    this.getAllToday = function() {
-    return $http.get(BASE + '/attendance/attendance/all_today/', {
-        headers: authHeader()
-    });
-};
-
-    // BREAKS
-    this.startBreak = function() {
-        return $http.post(BASE + '/attendance/attendance/start_break/', {}, { headers: authHeader() });
-    };
-    this.endBreak = function(breakId) {
-        return $http.post(BASE + '/attendance/attendance/end_break/', { break_id: breakId }, { headers: authHeader() });
-    };
+this.checkIn  = function() { return $http.post(BASE + '/attendance/check_in/',  {}, { headers: authHeader() }); };
+this.checkOut = function() { return $http.post(BASE + '/attendance/check_out/', {}, { headers: authHeader() }); };
+this.getToday = function() { return $http.get(BASE  + '/attendance/today/',         { headers: authHeader() }); };
+this.getStats = function() { return $http.get(BASE  + '/attendance/stats/',         { headers: authHeader() }); };
+this.getAttendance = function() { return $http.get(BASE + '/attendance/',           { headers: authHeader() }); };
+this.startBreak = function() { return $http.post(BASE + '/attendance/start_break/', {}, { headers: authHeader() }); };
+this.endBreak = function(breakId) { return $http.post(BASE + '/attendance/end_break/', { break_id: breakId }, { headers: authHeader() }); };
+this.getAllToday = function() { return $http.get(BASE + '/attendance/all_today/', { headers: authHeader() }); };
 
     // EMPLOYEES
     this.getEmployees = function() {
@@ -45,16 +34,22 @@ app.service('AttendanceService', function($http) {
         return $http.post(BASE + '/employees/create/', data, { headers: authHeader() });
     };
 
-    // LEAVES
-    this.applyLeave = function(leaveData) {
-        return $http.post(BASE + '/leave/leaves/apply/', leaveData, { headers: authHeader() });
-    };
-    this.getMyLeaves = function() {
-        return $http.get(BASE + '/leave/leaves/my_leaves/', { headers: authHeader() });
-    };
-    this.decideLeave = function(leaveId, decision) {
-        return $http.post(BASE + '/leave/leaves/' + leaveId + '/decide/', { status: decision }, { headers: authHeader() });
-    };
+    this.deleteEmployee = function(id) {
+    return $http.delete(BASE + '/employees/' + id + '/delete/', {
+        headers: authHeader()
+    });
+};
+
+// LEAVES
+this.applyLeave = function(leaveData) {
+    return $http.post(BASE + '/leaves/apply/', leaveData, { headers: authHeader() });
+};
+this.getMyLeaves = function() {
+    return $http.get(BASE + '/leaves/my_leaves/', { headers: authHeader() });
+};
+this.decideLeave = function(leaveId, decision) {
+    return $http.post(BASE + '/leaves/' + leaveId + '/decide/', { status: decision }, { headers: authHeader() });
+};
 });
 
 app.config(function($httpProvider) {

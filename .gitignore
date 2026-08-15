@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtualenvs
+venv/
+.venv/
+env/
+
+# Django
+# The dev database holds password hashes and DRF auth tokens. Token keys are
+# stored in PLAINTEXT and never expire, so a committed db is a set of live
+# credentials.
+db.sqlite3
+db.sqlite3-journal
+*.log
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+*.swp

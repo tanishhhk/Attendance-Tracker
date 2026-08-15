@@ -44,13 +44,20 @@
                 <option value="">All Departments</option>
                 <option ng-repeat="d in admin.departments" value="{{d}}">{{d}}</option>
             </select>
+            <!-- "On Leave" removed: all_today only ever returns
+                 present | late | absent | not_checked_in, so it always
+                 produced an empty table. -->
             <select ng-model="admin.filterStatus">
                 <option value="">All Status</option>
                 <option value="present">Present</option>
                 <option value="absent">Absent</option>
                 <option value="late">Late</option>
-                <option value="on-leave">On Leave</option>
+                <option value="not_checked_in">Not checked in</option>
             </select>
+        </div>
+
+        <div class="empty-state" ng-if="admin.loadError" style="color:#b91c1c;">
+            {{admin.loadError}}
         </div>
 
         <div class="hot-wrapper">
@@ -66,7 +73,7 @@
             </thead>
             <tbody>
                 <tr ng-repeat="e in admin.attendanceList
-                    | filter: {name: admin.searchQuery}
+                    | filter: admin.searchFilter
                     | filter: {department: admin.filterDept}
                     | filter: {status: admin.filterStatus}">
                     <td>{{e.name}}</td>

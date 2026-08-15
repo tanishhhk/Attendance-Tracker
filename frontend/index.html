@@ -6,8 +6,6 @@
     <title>Djubo - Attendance Tracker</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.css">
-
     <link rel="stylesheet" href="static/styles/styles.css">
     <link rel="stylesheet" href="static/styles/my-day.css">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
@@ -23,19 +21,18 @@
             document.write('<script src="https://cdn.jsdelivr.net/npm/highcharts@11.2.0/highcharts.min.js"><\/script>');
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.js"></script>
     <script src="static/js/angular-app.js"></script>
     <script src="static/js/services/attendance.service.js"></script>
     <script src="static/js/directives/appDirectives.js"></script>
     <script src="static/js/controllers/mainCtrl.js"></script>
     <script src="static/js/controllers/attendanceCtrl.js"></script>
-    <script src="static/js/controllers/calendarCtrl.js"></script>
-    <script src="static/js/controllers/profileCardCtrl.js"></script>
     <script src="static/js/controllers/settingsCtrl.js"></script>
     <script src="routes.js"></script>
 
 </head>
-<body ng-controller="MainController as main">
+<!-- MainController is instantiated by the route (see routes.js), not here.
+     Declaring it on <body> as well ran it twice per page load. -->
+<body>
     <div ng-view></div>
 </body>
 </html>

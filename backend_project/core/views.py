@@ -1,18 +1,15 @@
-from multiprocessing.managers import Token
-from urllib import request
 from django.shortcuts import render
-from psutil import users
+from django.db import transaction
+from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from attendance.models import UserProfile
 from .models import Post
 from .serializers import PostSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
-from rest_framework import status
-from rest_framework.permissions import AllowAny
 from django.contrib.auth.models import User
 
 def home(request):
@@ -38,13 +35,13 @@ class TestAuthView(APIView):
         return Response({"message": "Authenticated successfully"})
     
 class LoginView(APIView):
-    permission_classes = [AllowAny]   # ADD THIS
+    permission_classes = [AllowAny] 
 
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
 
-        user = authenticate(username=username, password=password)
+        user = authenticate(request=request, username=username, password=password)
 
         if user is None:
             return Response({"error": "Invalid credentials"}, status=401)
@@ -77,19 +74,21 @@ class CreateEmployeeView(APIView):
         if User.objects.filter(username=username).exists():
             return Response({"error": "Username already exists"}, status=400)
 
-        user = User.objects.create_user(
-            username=username,
-            password=password,
-            email=email,
-            first_name=request.data.get('first_name', '')
-        )
-        
-        UserProfile.objects.create(
-            user=user,
-            department=request.data.get('department', ''),
-            employee_id=username
-        )
+        # Both rows must land together: a User without its profile can never be
+        # re-created (the username check above would reject the retry).
+        with transaction.atomic():
+            user = User.objects.create_user(
+                username=username,
+                password=password,
+                email=email,
+                first_name=request.data.get('first_name', '')
+            )
 
+            UserProfile.objects.create(
+                user=user,
+                department=request.data.get('department', ''),
+                employee_id=username
+            )
 
         return Response({
             "message": "Employee created successfully",
@@ -130,7 +129,9 @@ class EmployeeListView(APIView):
                 "name":       (u['first_name'] + ' ' + u['last_name']).strip() or u['username'],
                 "email":      u['email'],
                 "department": profile.department if profile else '-',
-                "joined":     u['date_joined'].strftime('%Y-%m-%d'),
+                # date_joined is stored UTC; format it in the project timezone so
+                # evening sign-ups don't display as the previous day.
+                "joined":     timezone.localtime(u['date_joined']).strftime('%Y-%m-%d'),
             })
 
         return Response(data)

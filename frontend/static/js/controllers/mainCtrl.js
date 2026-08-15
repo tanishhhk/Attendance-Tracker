@@ -1,4 +1,4 @@
-app.controller('MainController', function($scope, $window, $interval, $location, AttendanceService) {
+app.controller('MainController', function($scope, $window, $timeout, AttendanceService) {
     var vm = this;
 
     // ── AUTH CHECK ──────────────────────────────────────────
@@ -8,6 +8,16 @@ app.controller('MainController', function($scope, $window, $interval, $location,
     }
 
     vm.currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+    // layout.html branches the whole page on currentUser.role. If the token
+    // survived but currentUser did not, neither ng-if matched and the user got
+    // a header above an entirely blank page with no way to recover.
+    if (!vm.currentUser.role) {
+        AttendanceService.logout();
+        $window.location.href = 'login.html';
+        return;
+    }
+
     vm.onBreak     = false;
     vm.breakTimer  = '00:00:00';
     vm.showProfile = false;
@@ -37,19 +47,37 @@ app.controller('MainController', function($scope, $window, $interval, $location,
     vm.openProfile  = function() { vm.loadProfileData(); vm.showProfile = true; };
     vm.closeProfile = function() { vm.showProfile = false; };
 
-    vm.triggerFileUpload = function() { $('#profilePicture').click(); };
+    vm.triggerFileUpload = function() {
+        var input = document.getElementById('profilePicture');
+        if (input) { input.click(); }
+    };
 
-    $(document).ready(function() {
-        $(document).on('change', '#profilePicture', function(e) {
-            var file = e.target.files[0];
-            if (!file) return;
-            var reader = new FileReader();
-            reader.onload = function(ev) {
-                $scope.$apply(function() {
-                    vm.profileData.profilePicture = ev.target.result;
-                });
-            };
-            reader.readAsDataURL(file);
+    // This used to be a delegated $(document).on('change', ...) registered
+    // inside the controller body, so a new handler was added to document on
+    // every controller instantiation and never removed on $destroy. One file
+    // pick then fired several FileReaders and several $scope.$apply() calls on
+    // stale scopes. Bind to the element itself, and only once.
+    function onProfilePictureChange(e) {
+        var file = e.target.files[0];
+        if (!file) { return; }
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+            $scope.$apply(function() {
+                vm.profileData.profilePicture = ev.target.result;
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // The input lives inside an ng-if, so it only exists once the profile modal
+    // is open. $timeout defers past the digest that actually renders it.
+    $scope.$watch(function() { return vm.showProfile; }, function(open) {
+        if (!open) { return; }
+        $timeout(function() {
+            var input = document.getElementById('profilePicture');
+            if (!input) { return; }
+            input.removeEventListener('change', onProfilePictureChange);
+            input.addEventListener('change', onProfilePictureChange);
         });
     });
 

@@ -1,4 +1,3 @@
-# attendance/models.py
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -12,7 +11,7 @@ class Attendance(models.Model):
     total_break_time = models.DurationField(null=True, blank=True)
 
     class Meta:
-        unique_together = ('user', 'date')  # prevents duplicate rows
+        unique_together = ('user', 'date')
 
     def __str__(self):
         return f"{self.user} - {self.date}"
@@ -21,7 +20,7 @@ class Break(models.Model):
     attendance = models.ForeignKey(Attendance, related_name='breaks', on_delete=models.CASCADE)
     start = models.DateTimeField()
     end = models.DateTimeField(null=True, blank=True)
-    duration = models.IntegerField(null=True, blank=True)  # seconds — nullable now
+    duration = models.IntegerField(null=True, blank=True)
 
 class UserProfile(models.Model):
     user       = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')

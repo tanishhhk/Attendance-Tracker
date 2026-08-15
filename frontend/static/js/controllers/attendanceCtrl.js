@@ -1,6 +1,9 @@
-app.controller('EmployeeController', function($scope, $interval, $window, $timeout, $http, AttendanceService) {
+app.controller('EmployeeController', function($scope, $interval, $timeout, AttendanceService, apiError) {
     var vm       = this;
-    var mainCtrl = $scope.$parent.main;
+    // Resolves up the ngIf -> ngInclude -> ngController prototypal scope chain
+    // to MainController's `main`. Fall back to a stub so a scope-structure
+    // change degrades instead of throwing on every mainCtrl.onBreak write.
+    var mainCtrl = ($scope.$parent && $scope.$parent.main) || {};
 
     vm.currentTime    = new Date();
     vm.onBreak        = false;
@@ -17,9 +20,11 @@ app.controller('EmployeeController', function($scope, $interval, $window, $timeo
     vm.stats          = { presentDays: 0, absentDays: 0, lateDays: 0, attendanceRate: 0 };
     vm.activeBreakId  = null;
 
-    $interval(function() { vm.currentTime = new Date(); }, 1000);
+    // Kept so it can be cancelled on $destroy; the previous version discarded
+    // the handle, so every route change left another 1 Hz timer running forever.
+    var clockInterval = $interval(function() { vm.currentTime = new Date(); }, 1000);
 
-    // ── LOAD TODAY ──────────────────────────────────────────
+//LOAD TODAY
     function loadToday() {
         AttendanceService.getToday().then(function(res) {
             var d = res.data;
@@ -34,10 +39,21 @@ app.controller('EmployeeController', function($scope, $interval, $window, $timeo
             vm.onBreak       = d.break_active;
             vm.activeBreakId = d.active_break_id;
             mainCtrl.onBreak = d.break_active;
+
+            // Resume the break timer after a reload. Previously only
+            // vm.startBreak() ever created the interval, so refreshing during a
+            // break left the full-screen overlay stuck at 00:00:00.
+            if (d.break_active && d.active_break_start) {
+                startBreakTimer(new Date(d.active_break_start));
+            } else {
+                stopBreakTimer();
+            }
+        }, function(err) {
+            vm.loadError = apiError(err, 'Could not load today\'s attendance.');
         });
     }
 
-    // ── LOAD STATS ──────────────────────────────────────────
+    //LOAD STATS
     function loadStats() {
         AttendanceService.getStats().then(function(res) {
             var d = res.data;
@@ -47,10 +63,12 @@ app.controller('EmployeeController', function($scope, $interval, $window, $timeo
                 lateDays:       d.late,
                 attendanceRate: d.total_days > 0 ? Math.round((d.present + d.late) / d.total_days * 100) : 0
             };
+        }, function(err) {
+            vm.loadError = apiError(err, 'Could not load attendance stats.');
         });
     }
 
-    // ── LOAD ALL ATTENDANCE (for calendar + charts) ─────────
+    //LOAD ALL ATTENDANCE (for calendar + charts)
     function loadAttendance() {
         AttendanceService.getAttendance().then(function(res) {
             vm.attendanceData = _.map(res.data, function(r) {
@@ -72,10 +90,12 @@ app.controller('EmployeeController', function($scope, $interval, $window, $timeo
                     };
                 }
             );
+        }, function(err) {
+            vm.loadError = apiError(err, 'Could not load attendance history.');
         });
     }
 
-    // ── LOAD LEAVES ─────────────────────────────────────────
+//LOAD LEAVES
     function loadLeaves() {
         AttendanceService.getMyLeaves().then(function(res) {
             vm.myLeaves = _.map(res.data, function(l) {
@@ -86,19 +106,30 @@ app.controller('EmployeeController', function($scope, $interval, $window, $timeo
                     toDate:    l.to_date,
                     reason:    l.reason,
                     status:    l.status,
-                    appliedOn: l.applied_on
+                    appliedOn: l.applied_on,
+                    // my-day.html renders {{l.days}}; it was never computed here
+                    // (only in the admin controller), so the column was blank.
+                    days:      moment(l.to_date).diff(moment(l.from_date), 'days') + 1
                 };
             });
+        }, function(err) {
+            vm.loadError = apiError(err, 'Could not load leave requests.');
         });
     }
 
-    // Init — load everything
+// Init — load everything
     loadToday();
     loadStats();
     loadAttendance();
     loadLeaves();
 
-    // ── CHECK IN ────────────────────────────────────────────
+// Cancel timers when the route changes, or they keep firing digests forever.
+    $scope.$on('$destroy', function() {
+        $interval.cancel(clockInterval);
+        if (vm.breakInterval) { $interval.cancel(vm.breakInterval); }
+    });
+
+//CHECK IN 
     vm.checkIn = function() {
         AttendanceService.checkIn().then(function(res) {
             alert('Check-in successful! Status: ' + res.data.status);
@@ -106,11 +137,11 @@ app.controller('EmployeeController', function($scope, $interval, $window, $timeo
             loadStats();
             loadAttendance();
         }, function(err) {
-            alert(err.data.error || 'Check-in failed');
+            alert(apiError(err, 'Check-in failed'));
         });
     };
 
-    // ── CHECK OUT ───────────────────────────────────────────
+//CHECK OUT
     vm.checkOut = function() {
         if (!confirm('Are you sure you want to check out?')) return;
         AttendanceService.checkOut().then(function(res) {
@@ -119,52 +150,67 @@ app.controller('EmployeeController', function($scope, $interval, $window, $timeo
             loadStats();
             loadAttendance();
         }, function(err) {
-            alert(err.data.error || 'Check-out failed');
+            alert(apiError(err, 'Check-out failed'));
         });
     };
 
-    // ── START BREAK ─────────────────────────────────────────
+//BREAK TIMER
+    function renderBreakTimer() {
+        var elapsed = Math.max(0, moment().diff(moment(vm.breakStartTime), 'seconds'));
+        var d = moment.duration(elapsed, 'seconds');
+        var hours = Math.floor(d.asHours());
+        var t = (hours        < 10 ? '0' : '') + hours        + ':' +
+                (d.minutes()  < 10 ? '0' : '') + d.minutes()  + ':' +
+                (d.seconds()  < 10 ? '0' : '') + d.seconds();
+        vm.breakTimer = mainCtrl.breakTimer = t;
+    }
+
+    function startBreakTimer(startedAt) {
+        vm.breakStartTime = startedAt;
+        if (vm.breakInterval) { $interval.cancel(vm.breakInterval); }
+        renderBreakTimer();
+        vm.breakInterval = $interval(renderBreakTimer, 1000);
+    }
+
+    function stopBreakTimer() {
+        if (vm.breakInterval) { $interval.cancel(vm.breakInterval); }
+        vm.breakInterval  = null;
+        vm.breakStartTime = null;
+        vm.breakTimer     = mainCtrl.breakTimer = '00:00:00';
+    }
+
+//START BREAK
     vm.startBreak = function() {
         AttendanceService.startBreak().then(function(res) {
-            vm.activeBreakId  = res.data.break_id;
-            vm.onBreak        = true;
-            mainCtrl.onBreak  = true;
-            vm.breakStartTime = new Date();
-
-            if (vm.breakInterval) $interval.cancel(vm.breakInterval);
-            vm.breakInterval = $interval(function() {
-                var elapsed = moment().diff(moment(vm.breakStartTime), 'seconds');
-                var d = moment.duration(elapsed, 'seconds');
-                var t = (d.hours()   < 10 ? '0' : '') + d.hours()   + ':' +
-                        (d.minutes() < 10 ? '0' : '') + d.minutes() + ':' +
-                        (d.seconds() < 10 ? '0' : '') + d.seconds();
-                vm.breakTimer = mainCtrl.breakTimer = t;
-            }, 1000);
+            vm.activeBreakId = res.data.break_id;
+            vm.onBreak       = true;
+            mainCtrl.onBreak = true;
+            startBreakTimer(res.data.start ? new Date(res.data.start) : new Date());
         }, function(err) {
-            alert(err.data.error || 'Could not start break');
+            alert(apiError(err, 'Could not start break'));
         });
     };
 
-    // ── END BREAK ───────────────────────────────────────────
+//END BREAK
     vm.endBreak = function() {
         if (!vm.activeBreakId) return;
-        if (vm.breakInterval) $interval.cancel(vm.breakInterval);
 
         AttendanceService.endBreak(vm.activeBreakId).then(function(res) {
-            vm.onBreak        = false;
-            mainCtrl.onBreak  = false;
-            vm.breakTimer     = mainCtrl.breakTimer = '00:00:00';
-            vm.breakStartTime = null;
-            vm.activeBreakId  = null;
+            vm.onBreak       = false;
+            mainCtrl.onBreak = false;
+            vm.activeBreakId = null;
+            stopBreakTimer();
             loadToday();
         }, function(err) {
-            alert(err.data.error || 'Could not end break');
+            // Do NOT stop the timer here: the break is still open server-side,
+            // so cancelling it up front left a running break with a dead clock.
+            alert(apiError(err, 'Could not end break'));
         });
     };
 
     $scope.$on('endBreak', function() { vm.endBreak(); });
 
-    // ── LEAVE ───────────────────────────────────────────────
+//LEAVE 
     vm.openLeaveForm  = function() { vm.leaveForm = { type: '', fromDate: '', toDate: '', reason: '' }; vm.showLeaveForm = true; };
     vm.closeLeaveForm = function() { vm.showLeaveForm = false; };
 
@@ -177,15 +223,15 @@ app.controller('EmployeeController', function($scope, $interval, $window, $timeo
 
         AttendanceService.applyLeave({
             leave_type: vm.leaveForm.type,
-            from_date:  vm.leaveForm.fromDate,
-            to_date:    vm.leaveForm.toDate,
+            from_date: moment(vm.leaveForm.fromDate).format('YYYY-MM-DD'),
+            to_date:   moment(vm.leaveForm.toDate).format('YYYY-MM-DD'),
             reason:     vm.leaveForm.reason
         }).then(function() {
             alert('Leave request submitted!');
             vm.showLeaveForm = false;
             loadLeaves();
         }, function(err) {
-            alert(err.data.error || 'Could not submit leave');
+            alert(apiError(err, 'Could not submit leave'));
         });
     };
 
@@ -197,7 +243,7 @@ app.controller('EmployeeController', function($scope, $interval, $window, $timeo
         return vm.todayStatus.checkIn ? moment(vm.todayStatus.checkIn).fromNow() : '';
     };
 
-    // ── CALENDAR ────────────────────────────────────────────
+//CALENDAR
     vm.weekDays     = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     vm.currentMonth = moment();
     vm.calendarDays = [];
@@ -235,7 +281,13 @@ app.controller('EmployeeController', function($scope, $interval, $window, $timeo
     vm.nextMonth            = function() { vm.currentMonth = vm.currentMonth.clone().add(1, 'month');      vm.generateCalendar(); };
     vm.calendarMonthDisplay = function() { return vm.currentMonth.format('MMMM YYYY'); };
 
-    // ── CHARTS ──────────────────────────────────────────────
+    // Render the grid immediately. generateCalendar() used to be called only
+    // inside loadAttendance()'s success handler, so any failure of that request
+    // left an empty grid under a correct-looking month heading. It is called
+    // again once the records arrive, to colour the days in.
+    vm.generateCalendar();
+
+//CHARTS 
     vm.renderAttendanceChart = function() {
         if (typeof Highcharts === 'undefined') {
             setTimeout(vm.renderAttendanceChart, 500); return;

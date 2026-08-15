@@ -6,6 +6,12 @@
 </script>
 <div ng-controller="EmployeeController as emp">
 
+    <!-- Load failures used to be swallowed entirely, leaving a dashboard of
+         zeros with no indication anything had gone wrong. -->
+    <div class="empty-state" ng-if="emp.loadError" style="color:#b91c1c;">
+        {{emp.loadError}}
+    </div>
+
     <div class="stats-grid">
         <div class="stat-card"><h3>{{emp.stats.presentDays}}</h3><p>Days Present</p></div>
         <div class="stat-card"><h3>{{emp.stats.absentDays}}</h3><p>Days Absent</p></div>

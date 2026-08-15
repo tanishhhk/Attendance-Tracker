@@ -13,3 +13,4 @@ class Leave(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.leave_type} - {self.status}"
+    

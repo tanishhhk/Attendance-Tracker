@@ -1,8 +1,9 @@
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import SimpleRouter
 from .views import LeaveViewSet
 
-router = DefaultRouter()
+# SimpleRouter for the same 'api-root' name-collision reason as attendance.
+router = SimpleRouter()
 router.register(r'leaves', LeaveViewSet, basename='leave')
 
 urlpatterns = [

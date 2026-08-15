@@ -4,12 +4,12 @@ app.controller('AuthController', function($scope, $window, AttendanceService) {
     auth.credentials = { username: '', password: '' };
     auth.errorMsg    = '';
 
-    // Greeting based on time of day
+//greeting based on time of day
     var hour = new Date().getHours();
     auth.greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
     auth.todayDisplay = moment().format('dddd, MMMM D YYYY');
 
-    // If already logged in, skip login page
+//if already logged in, skip login page
     if (AttendanceService.isLoggedIn()) {
         $window.location.href = 'index.html';
         return;
